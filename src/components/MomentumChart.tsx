@@ -45,8 +45,8 @@ const ORDINAL = ["1st", "2nd", "3rd", "4th", "5th"];
 export function MomentumChart({ pbp }: { pbp: Pbp }) {
   const home = pbp.teams.find((t) => t.isHome);
   const away = pbp.teams.find((t) => !t.isHome);
-  const homeColor = safeColor(home?.color, "#ff5f2e");
-  const awayColor = safeColor(away?.color, "#3b7ddd");
+  const homeColor = safeColor(home?.color, "#6cace4");
+  const awayColor = safeColor(away?.color, "#b2b4b2");
 
   const series = useMemo(() => setSeries(pbp), [pbp]);
   const live = series.filter((s) => s.points.length > 1);

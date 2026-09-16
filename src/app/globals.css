@@ -1,24 +1,27 @@
 @import "tailwindcss";
 
 /**
- * Dark-only theme. Every screen in the design is a deep navy surface lit by a
- * single warm accent, so a light variant would be a second design, not a toggle.
+ * Dark-only theme, Creighton palette. Surfaces are Creighton Navy (#00245D)
+ * darkened for the page itself; the lit element is Creighton Light Blue
+ * (#6CACE4) for marks and type, Creighton Blue (#005CA9) for filled chips,
+ * where white type needs the darker of the two. A light variant would be a
+ * second design, not a toggle.
  */
 @theme {
-  --color-bg: #00060f;
-  --color-bg-2: #04101f;
-  --color-surface: #0a1526;
-  --color-card: #0a1524;
-  --color-line: #17263c;
-  --color-line-soft: #101c2d;
+  --color-bg: #000d22;
+  --color-bg-2: #00245d;
+  --color-surface: #0a2e66;
+  --color-card: #00214f;
+  --color-line: #123a74;
+  --color-line-soft: #0a2750;
   --color-ink: #f3f6fb;
-  --color-muted: #8793a7;
-  --color-faint: #5d6a80;
+  --color-muted: #b2b4b2;
+  --color-faint: #707372;
 
-  --color-accent: #ff5f2e;
-  --color-accent-2: #ff8a3d;
-  --color-accent-soft: #24160f;
-  --color-cool: #3b7ddd;
+  --color-accent: #6cace4;
+  --color-accent-2: #005ca9;
+  --color-accent-soft: #05203f;
+  --color-cool: #6cace4;
   --color-live: #2ecc71;
 
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
@@ -46,16 +49,16 @@ body {
 
 /* Elevated panel: a hair lighter than the page, hairline border, soft depth. */
 .panel {
-  background: linear-gradient(180deg, rgb(16 30 50 / 0.82) 0%, rgb(8 18 32 / 0.82) 100%);
+  background: linear-gradient(180deg, rgb(0 36 93 / 0.82) 0%, rgb(0 20 55 / 0.82) 100%);
   backdrop-filter: blur(6px);
   border: 1px solid var(--color-line);
   box-shadow: 0 1px 0 rgb(255 255 255 / 0.03) inset, 0 8px 24px -16px rgb(0 0 0 / 0.9);
 }
 
-/* The one warm element on screen — selected chips, active tabs. */
+/* Selected chips and active tabs: Creighton Blue, which carries white type. */
 .accent-fill {
-  background: linear-gradient(160deg, var(--color-accent-2) 0%, var(--color-accent) 70%);
-  box-shadow: 0 6px 20px -6px rgb(255 95 46 / 0.55);
+  background: linear-gradient(160deg, #0a6cc0 0%, var(--color-accent-2) 70%);
+  box-shadow: 0 6px 20px -6px rgb(0 92 169 / 0.65);
 }
 
 .title-xl {

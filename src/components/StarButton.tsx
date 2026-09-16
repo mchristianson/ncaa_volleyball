@@ -29,7 +29,7 @@ export function StarButton({
       className={`grid shrink-0 place-items-center rounded-full p-1 transition active:scale-90 ${
         active ? "text-accent" : "text-faint hover:text-muted"
       } ${className}`}
-      style={active ? { filter: "drop-shadow(0 0 7px rgb(255 95 46 / 0.5))" } : undefined}
+      style={active ? { filter: "drop-shadow(0 0 7px rgb(108 172 228 / 0.5))" } : undefined}
     >
       <svg
         width={size}

@@ -5,6 +5,7 @@ export function Header({
   subtitle,
   right,
   back,
+  leading,
   collapseTitle,
   size = "lg",
 }: {
@@ -12,6 +13,8 @@ export function Header({
   subtitle?: string | null;
   right?: React.ReactNode;
   back?: React.ReactNode;
+  /** Sits ahead of the title — the app mark on the scores page. */
+  leading?: React.ReactNode;
   /** Hides the title so `right` can take the full bar (e.g. an open search). */
   collapseTitle?: boolean;
   /** "lg" is the landing headline; "sm" sits next to a back button. */
@@ -24,6 +27,7 @@ export function Header({
     >
       <div className="flex items-center gap-3">
         {back}
+        {collapseTitle ? null : leading}
         {collapseTitle ? null : (
           <div className="min-w-0 flex-1">
             <h1

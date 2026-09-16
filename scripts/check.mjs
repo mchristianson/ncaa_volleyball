@@ -41,11 +41,11 @@ const check = async (name, fn) => {
 console.log(`checking ${BASE}\n`);
 
 await check("safeColor keeps usable colors and rescues unusable ones", () => {
-  assert.equal(safeColor("#e4572e"), "#e4572e");
+  assert.equal(safeColor("#005ca9"), "#005ca9");
   // Hawaii's #154734 is legible on white but disappears on this UI's near-black.
   assert.notEqual(safeColor("#154734"), "#154734");
-  assert.equal(safeColor(null), "#667085");
-  assert.equal(safeColor("not-a-color"), "#667085");
+  assert.equal(safeColor(null), "#707372");
+  assert.equal(safeColor("not-a-color"), "#707372");
   // Long Beach State ships #010101, which disappears on a dark background.
   const lifted = safeColor("#010101");
   assert.notEqual(lifted, "#010101");

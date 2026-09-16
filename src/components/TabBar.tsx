@@ -62,7 +62,7 @@ export function TabBar() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   aria-hidden
-                  style={active ? { filter: "drop-shadow(0 0 8px rgb(255 95 46 / 0.55))" } : undefined}
+                  style={active ? { filter: "drop-shadow(0 0 8px rgb(108 172 228 / 0.55))" } : undefined}
                 >
                   {t.icon}
                 </svg>

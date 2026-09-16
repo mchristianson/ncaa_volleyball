@@ -71,10 +71,10 @@ export function TeamStatsCompare({ box }: { box: Boxscore }) {
                 aria-label={`${row.label}: ${away?.nameShort} ${a[row.key] ?? "–"}, ${home?.nameShort} ${h[row.key] ?? "–"}`}
               >
                 <span
-                  className="bg-gradient-to-r from-[#41527a] to-[#7d92bd]"
+                  className="bg-gradient-to-r from-[#707372] to-[#b2b4b2]"
                   style={{ width: `${pct}%` }}
                 />
-                <span className="flex-1 bg-gradient-to-r from-[#ff7a3d] to-[#ff5424]" />
+                <span className="flex-1 bg-gradient-to-r from-[#005ca9] to-[#6cace4]" />
               </div>
             </li>
           );

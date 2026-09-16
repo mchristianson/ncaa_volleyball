@@ -70,7 +70,7 @@ export function dayLabel(iso: string, today: string) {
  * one of our two themes. Nudge those to a readable lightness instead of
  * dropping the team's identity entirely.
  */
-export function safeColor(hex: string | null | undefined, fallback = "#667085") {
+export function safeColor(hex: string | null | undefined, fallback = "#707372") {
   if (!hex || !/^#?[0-9a-f]{6}$/i.test(hex)) return fallback;
   const h = hex.replace("#", "");
   const r = parseInt(h.slice(0, 2), 16);

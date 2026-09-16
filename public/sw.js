@@ -3,8 +3,8 @@
  * ponytail: cache-first for the app shell, network-only for /api (scores must
  * never come from a stale cache). Swap in Workbox only if this stops being enough.
  */
-const CACHE = "ncaavb-v1";
-const SHELL = ["/", "/rankings", "/favorites", "/icon.svg"];
+const CACHE = "ncaavb-v3";
+const SHELL = ["/", "/rankings", "/favorites", "/icon-192.png"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(

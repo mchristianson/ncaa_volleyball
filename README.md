@@ -27,7 +27,7 @@ browser's localStorage.
 
 The interface is dark-only by design: every screen sits on the arena art in
 `public/backdrop.webp` (16KB, masked so it hands off to the page background with
-no seam), lit by a single warm accent. A light variant would be a second design
+no seam), lit by the Creighton palette — navy surfaces, light blue as the accent. A light variant would be a second design
 rather than a toggle, so there isn't one.
 
 Box scores fit a phone on one line per player — no horizontal scrolling. Long

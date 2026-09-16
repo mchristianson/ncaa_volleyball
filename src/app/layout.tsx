@@ -17,10 +17,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f6f7f9" },
-    { media: "(prefers-color-scheme: dark)", color: "#0b0d11" },
-  ],
+  // Dark-only UI, so the browser chrome matches the page in either scheme.
+  themeColor: "#000d22",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",

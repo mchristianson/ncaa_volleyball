@@ -147,7 +147,7 @@ export function BoxScore({ box }: { box: Boxscore }) {
               </tbody>
               {entry?.teamStats ? (
                 <tfoot>
-                  <tr className="bg-[#070f1c] text-[12px] font-bold">
+                  <tr className="bg-[#00173a] text-[12px] font-bold">
                     <th scope="row" className="py-2.5 pl-3 text-left">
                       Team
                     </th>

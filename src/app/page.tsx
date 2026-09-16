@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import { Backdrop } from "@/components/Backdrop";
 import { DateStrip } from "@/components/DateStrip";
@@ -87,6 +88,16 @@ export default function ScoresPage() {
       <Header
         title="Volley Scores"
         subtitle={`${dayLabel(date, today)} · ${label(total)}`}
+        leading={
+          <Image
+            src="/icon-192.png"
+            alt=""
+            width={44}
+            height={44}
+            priority
+            className="h-11 w-11 shrink-0 rounded-[13px] border border-line object-cover"
+          />
+        }
         collapseTitle={searchOpen}
         right={
           <TeamSearch
