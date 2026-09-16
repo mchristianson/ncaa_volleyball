@@ -78,12 +78,14 @@ export function safeColor(hex: string | null | undefined, fallback = "#667085") 
   const b = parseInt(h.slice(4, 6), 16);
   // Rec. 601 luma, which tracks perceived brightness well enough here.
   const luma = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-  if (luma > 0.1 && luma < 0.9) return `#${h}`;
+  // The UI is near-black, so deep navies and forest greens need lifting too,
+  // not just literal black.
+  if (luma > 0.22 && luma < 0.9) return `#${h}`;
 
-  const target = luma <= 0.1 ? 0.45 : 0.55;
+  const target = luma <= 0.22 ? 0.5 : 0.55;
   const scale = luma === 0 ? target : target / Math.max(luma, 0.001);
   const clamp = (v: number) => Math.max(0, Math.min(255, Math.round(v * scale)));
-  const mix = (v: number) => (luma <= 0.1 ? Math.max(clamp(v), 70) : clamp(v));
+  const mix = (v: number) => (luma <= 0.22 ? Math.max(clamp(v), 70) : clamp(v));
   return `#${[mix(r), mix(g), mix(b)]
     .map((v) => v.toString(16).padStart(2, "0"))
     .join("")}`;

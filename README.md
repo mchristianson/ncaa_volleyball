@@ -1,4 +1,4 @@
-# D1 Volleyball
+# NCAA Volleyball
 
 Mobile-first scores, schedules, box scores and rankings for **NCAA Division I
 women's volleyball**. No account, no backend database — favorites live in the
@@ -24,6 +24,14 @@ browser's localStorage.
   week-over-week movement and your favorites highlighted.
 - **Team pages** — record, upcoming matches and recent results.
 - **PWA** — installable, with an offline app shell. Live matches poll every 20s.
+
+The interface is dark-only by design: every screen sits on the arena art in
+`public/backdrop.webp` (16KB, masked so it hands off to the page background with
+no seam), lit by a single warm accent. A light variant would be a second design
+rather than a toggle, so there isn't one.
+
+Box scores fit a phone on one line per player — no horizontal scrolling. Long
+names are clipped with a soft fade; tapping a name expands it in place.
 
 ## Where the data comes from
 

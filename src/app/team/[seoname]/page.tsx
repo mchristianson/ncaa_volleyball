@@ -1,8 +1,17 @@
 "use client";
 
 import { use, useMemo } from "react";
+import { Backdrop } from "@/components/Backdrop";
 import { GameCard } from "@/components/GameCard";
-import { BackButton, Empty, Header, SectionTitle, Spinner } from "@/components/Header";
+import {
+  BackButton,
+  CalendarGlyph,
+  ChartGlyph,
+  Empty,
+  Header,
+  SectionTitle,
+  Spinner,
+} from "@/components/Header";
 import { StarButton } from "@/components/StarButton";
 import { TeamLogo } from "@/components/TeamLogo";
 import { useTeamSchedule } from "@/lib/api";
@@ -43,23 +52,23 @@ export default function TeamPage({
 
   return (
     <>
+      <Backdrop />
       <Header
         title={name}
         subtitle={conference ? titleCase(conference) : null}
         back={<BackButton />}
+        size="sm"
         right={<StarButton kind="team" id={seoname} label={name} />}
       />
 
-      <div className="px-4">
-        <div className="flex items-center gap-3 py-4">
+      <div className="relative z-10 px-5">
+        <div className="panel mt-2 flex items-center gap-4 rounded-2xl px-4 py-4">
           <TeamLogo seoname={seoname} label={name} size={56} />
           <div>
-            <p className="font-mono text-2xl font-bold tabular-nums">
+            <p className="text-[26px] font-bold tabular-nums">
               {record.w}–{record.l}
             </p>
-            <p className="text-[11px] text-muted">
-              Record in the last 3 weeks of play
-            </p>
+            <p className="text-[12px] text-muted">Record in the last 3 weeks of play</p>
           </div>
           {conference ? (
             <StarButton
@@ -79,8 +88,8 @@ export default function TeamPage({
 
         {upcoming.length > 0 && (
           <section>
-            <SectionTitle>Upcoming</SectionTitle>
-            <div className="space-y-2">
+            <SectionTitle icon={CalendarGlyph} count={`${upcoming.length}`}>Upcoming</SectionTitle>
+            <div className="space-y-2.5">
               {upcoming.map((g) => (
                 <GameCard key={g.contestId} game={g} showDate />
               ))}
@@ -90,8 +99,8 @@ export default function TeamPage({
 
         {played.length > 0 && (
           <section>
-            <SectionTitle>Results</SectionTitle>
-            <div className="space-y-2">
+            <SectionTitle icon={ChartGlyph} count={`${played.length}`}>Results</SectionTitle>
+            <div className="space-y-2.5">
               {played
                 .slice()
                 .reverse()

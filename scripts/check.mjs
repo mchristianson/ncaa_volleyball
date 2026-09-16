@@ -42,6 +42,8 @@ console.log(`checking ${BASE}\n`);
 
 await check("safeColor keeps usable colors and rescues unusable ones", () => {
   assert.equal(safeColor("#e4572e"), "#e4572e");
+  // Hawaii's #154734 is legible on white but disappears on this UI's near-black.
+  assert.notEqual(safeColor("#154734"), "#154734");
   assert.equal(safeColor(null), "#667085");
   assert.equal(safeColor("not-a-color"), "#667085");
   // Long Beach State ships #010101, which disappears on a dark background.

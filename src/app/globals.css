@@ -1,35 +1,33 @@
 @import "tailwindcss";
 
+/**
+ * Dark-only theme. Every screen in the design is a deep navy surface lit by a
+ * single warm accent, so a light variant would be a second design, not a toggle.
+ */
 @theme {
-  --color-bg: #f6f7f9;
-  --color-surface: #ffffff;
-  --color-surface-2: #f1f3f6;
-  --color-line: #e3e6ec;
-  --color-ink: #10131a;
-  --color-muted: #667085;
-  --color-accent: #e4572e;
-  --color-accent-soft: #fdeee9;
-  --color-live: #12a150;
+  --color-bg: #00060f;
+  --color-bg-2: #04101f;
+  --color-surface: #0a1526;
+  --color-card: #0a1524;
+  --color-line: #17263c;
+  --color-line-soft: #101c2d;
+  --color-ink: #f3f6fb;
+  --color-muted: #8793a7;
+  --color-faint: #5d6a80;
+
+  --color-accent: #ff5f2e;
+  --color-accent-2: #ff8a3d;
+  --color-accent-soft: #24160f;
+  --color-cool: #3b7ddd;
+  --color-live: #2ecc71;
+
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  @theme {
-    --color-bg: #0b0d11;
-    --color-surface: #14171d;
-    --color-surface-2: #1c2029;
-    --color-line: #262b35;
-    --color-ink: #eef1f6;
-    --color-muted: #939bab;
-    --color-accent: #ff7a55;
-    --color-accent-soft: #2a1a15;
-    --color-live: #2ecc71;
-  }
-}
-
 html {
-  color-scheme: light dark;
+  color-scheme: dark;
+  background: var(--color-bg);
 }
 
 body {
@@ -39,12 +37,30 @@ body {
   overscroll-behavior-y: none;
 }
 
-/* Horizontal strips (dates, tabs) scroll without a visible scrollbar. */
 .no-scrollbar {
   scrollbar-width: none;
 }
 .no-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+/* Elevated panel: a hair lighter than the page, hairline border, soft depth. */
+.panel {
+  background: linear-gradient(180deg, rgb(16 30 50 / 0.82) 0%, rgb(8 18 32 / 0.82) 100%);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--color-line);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.03) inset, 0 8px 24px -16px rgb(0 0 0 / 0.9);
+}
+
+/* The one warm element on screen — selected chips, active tabs. */
+.accent-fill {
+  background: linear-gradient(160deg, var(--color-accent-2) 0%, var(--color-accent) 70%);
+  box-shadow: 0 6px 20px -6px rgb(255 95 46 / 0.55);
+}
+
+.title-xl {
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
 @keyframes pulse-dot {
@@ -53,4 +69,10 @@ body {
 }
 .live-dot {
   animation: pulse-dot 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-dot {
+    animation: none;
+  }
 }

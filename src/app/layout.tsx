@@ -9,11 +9,11 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "D1 Volleyball",
+  title: "NCAA Volleyball",
   description:
     "NCAA Division I women's volleyball scores, schedules, box scores and rankings.",
   manifest: "/manifest.webmanifest",
-  appleWebApp: { capable: true, title: "D1 VB", statusBarStyle: "default" },
+  appleWebApp: { capable: true, title: "NCAA VB", statusBarStyle: "default" },
 };
 
 export const viewport: Viewport = {
@@ -33,8 +33,8 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Providers>
-          <div className="mx-auto flex min-h-dvh max-w-2xl flex-col">
-            <main className="flex-1 pb-2">{children}</main>
+          <div className="relative mx-auto flex min-h-dvh max-w-2xl flex-col">
+            <main className="relative flex-1 pb-2">{children}</main>
             <TabBar />
             <ServiceWorker />
           </div>

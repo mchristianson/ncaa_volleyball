@@ -15,9 +15,7 @@ export function DateStrip({
   span?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const days = Array.from({ length: span * 2 + 1 }, (_, i) =>
-    shiftISO(today, i - span),
-  );
+  const days = Array.from({ length: span * 2 + 1 }, (_, i) => shiftISO(today, i - span));
 
   useEffect(() => {
     ref.current
@@ -26,10 +24,12 @@ export function DateStrip({
   }, [value]);
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-stretch gap-2">
+      {/* Bleed the scroller into the page gutter so chips can sit flush at the
+          edge while still scrolling past it. */}
       <div
         ref={ref}
-        className="no-scrollbar flex flex-1 gap-1 overflow-x-auto scroll-smooth"
+        className="no-scrollbar -mx-5 flex flex-1 gap-2 overflow-x-auto scroll-smooth px-5"
       >
         {days.map((iso) => {
           const d = new Date(`${iso}T12:00:00Z`);
@@ -39,27 +39,26 @@ export function DateStrip({
               key={iso}
               data-selected={selected}
               onClick={() => onChange(iso)}
-              className={`flex w-12 shrink-0 flex-col items-center rounded-xl px-1 py-1.5 text-center transition ${
-                selected
-                  ? "bg-accent text-white"
-                  : iso === today
-                    ? "bg-accent-soft text-accent"
-                    : "text-muted"
+              aria-pressed={selected}
+              className={`flex h-[74px] w-[62px] shrink-0 flex-col items-center justify-center gap-1 rounded-2xl transition ${
+                selected ? "accent-fill text-white" : "panel text-muted"
               }`}
             >
-              <span className="text-[10px] font-medium uppercase">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.08em] opacity-80">
                 {d.toLocaleDateString(undefined, { weekday: "short", timeZone: "UTC" })}
               </span>
-              <span className="text-[15px] font-semibold tabular-nums">
+              <span
+                className={`text-[22px] font-bold tabular-nums ${selected ? "text-white" : "text-ink"}`}
+              >
                 {d.toLocaleDateString(undefined, { day: "numeric", timeZone: "UTC" })}
               </span>
             </button>
           );
         })}
       </div>
-      <label className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-line bg-surface text-muted">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
-          <rect x="3" y="5" width="18" height="16" rx="3" />
+      <label className="panel grid h-[74px] w-[62px] shrink-0 place-items-center rounded-2xl text-muted">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" aria-hidden>
+          <rect x="3" y="5" width="18" height="16" rx="4" />
           <path d="M3 10h18M8 3v4M16 3v4" />
         </svg>
         <input

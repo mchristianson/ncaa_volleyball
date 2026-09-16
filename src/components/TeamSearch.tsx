@@ -35,7 +35,7 @@ export function TeamSearch({
         onClick={onOpen}
         aria-label="Search teams"
         aria-expanded={false}
-        className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-surface-2 text-muted transition active:scale-90"
+        className="panel grid h-11 w-11 shrink-0 place-items-center rounded-full text-muted transition active:scale-90"
       >
         <SearchIcon />
       </button>
@@ -44,7 +44,7 @@ export function TeamSearch({
 
   return (
     <div className="flex flex-1 items-center gap-2">
-      <div className="flex flex-1 items-center gap-2 rounded-full border border-line bg-surface px-3">
+      <div className="panel flex flex-1 items-center gap-2 rounded-full px-4">
         <span className="text-muted" aria-hidden>
           <SearchIcon />
         </span>
@@ -62,7 +62,7 @@ export function TeamSearch({
           autoComplete="off"
           autoCorrect="off"
           spellCheck={false}
-          className="h-10 min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-muted [&::-webkit-search-cancel-button]:appearance-none"
+          className="h-11 min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-muted [&::-webkit-search-cancel-button]:appearance-none"
         />
         {query ? (
           <span className="shrink-0 font-mono text-[11px] tabular-nums text-muted">

@@ -1,9 +1,18 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { Backdrop } from "@/components/Backdrop";
 import { DateStrip } from "@/components/DateStrip";
 import { GameCard } from "@/components/GameCard";
-import { Empty, Header, SectionTitle, Spinner } from "@/components/Header";
+import {
+  CalendarGlyph,
+  ChartGlyph,
+  Empty,
+  Header,
+  SectionTitle,
+  Spinner,
+  StarGlyph,
+} from "@/components/Header";
 import { TeamSearch } from "@/components/TeamSearch";
 import { useRankings, useScoreboard } from "@/lib/api";
 import { useFavorites } from "@/lib/favorites";
@@ -18,11 +27,21 @@ function gameRank(g: ScoreboardGame, pollRank: Map<string, number>) {
   return ranks.length ? Math.min(...ranks) : null;
 }
 
+type SectionId = "mine" | "ranked" | "rest";
+
 export default function ScoresPage() {
   const today = useMemo(() => todayISO(), []);
   const [date, setDate] = useState(today);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [closed, setClosed] = useState<Record<SectionId, boolean>>({
+    mine: false,
+    ranked: false,
+    rest: false,
+  });
+  const toggle = (id: SectionId) =>
+    setClosed((c) => ({ ...c, [id]: !c[id] }));
+
   const { data, isLoading, isError } = useScoreboard(date);
   const favorites = useFavorites();
 
@@ -60,12 +79,14 @@ export default function ScoresPage() {
   }, [data, favorites, pollRank, query]);
 
   const total = (data?.games ?? []).length;
+  const label = (n: number) => `${n} ${n === 1 ? "match" : "matches"}`;
 
   return (
     <>
+      <Backdrop />
       <Header
-        title="D1 Volleyball"
-        subtitle={`${dayLabel(date, today)} · ${total} ${total === 1 ? "match" : "matches"}`}
+        title="NCAA Volleyball"
+        subtitle={`${dayLabel(date, today)} · ${label(total)}`}
         collapseTitle={searchOpen}
         right={
           <TeamSearch
@@ -81,11 +102,12 @@ export default function ScoresPage() {
           />
         }
       />
-      <div className="sticky top-[68px] z-10 bg-bg/85 px-4 py-2 backdrop-blur">
+
+      <div className="relative z-10 px-5 pt-1">
         <DateStrip value={date} today={today} onChange={setDate} />
       </div>
 
-      <div className="px-4">
+      <div className="relative z-10 px-5">
         {isLoading ? <Spinner /> : null}
         {isError ? <Empty>Couldn&apos;t reach the NCAA feed. Pull to retry.</Empty> : null}
         {!isLoading && !isError && total === 0 ? (
@@ -100,39 +122,64 @@ export default function ScoresPage() {
 
         {mine.length > 0 && (
           <section>
-            <SectionTitle>Your favorites</SectionTitle>
-            <div className="space-y-2">
-              {mine.map((g) => (
-                <GameCard key={g.contestId} game={g} pinned />
-              ))}
-            </div>
+            <SectionTitle
+              icon={StarGlyph}
+              count={label(mine.length)}
+              open={!closed.mine}
+              onToggle={() => toggle("mine")}
+            >
+              Your favorites
+            </SectionTitle>
+            {!closed.mine && (
+              <div className="space-y-2.5">
+                {mine.map((g) => (
+                  <GameCard key={g.contestId} game={g} pinned />
+                ))}
+              </div>
+            )}
           </section>
         )}
 
         {ranked.length > 0 && (
           <section>
-            <SectionTitle>Ranked teams</SectionTitle>
-            <div className="space-y-2">
-              {ranked.map((g) => (
-                <GameCard key={g.contestId} game={g} />
-              ))}
-            </div>
+            <SectionTitle
+              icon={ChartGlyph}
+              count={label(ranked.length)}
+              open={!closed.ranked}
+              onToggle={() => toggle("ranked")}
+            >
+              Ranked teams
+            </SectionTitle>
+            {!closed.ranked && (
+              <div className="space-y-2.5">
+                {ranked.map((g) => (
+                  <GameCard key={g.contestId} game={g} />
+                ))}
+              </div>
+            )}
           </section>
         )}
 
         {rest.length > 0 && (
           <section>
-            {(mine.length > 0 || ranked.length > 0) && (
-              <SectionTitle>All matches</SectionTitle>
+            <SectionTitle
+              icon={CalendarGlyph}
+              count={label(rest.length)}
+              open={!closed.rest}
+              onToggle={() => toggle("rest")}
+            >
+              All matches
+            </SectionTitle>
+            {!closed.rest && (
+              <div className="space-y-2.5">
+                {rest.map((g) => (
+                  <GameCard key={g.contestId} game={g} />
+                ))}
+              </div>
             )}
-            <div className="space-y-2 pt-2">
-              {rest.map((g) => (
-                <GameCard key={g.contestId} game={g} />
-              ))}
-            </div>
           </section>
         )}
-        <div className="h-6" />
+        <div className="h-8" />
       </div>
     </>
   );

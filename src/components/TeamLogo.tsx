@@ -21,7 +21,7 @@ export function TeamLogo({
   if (!seoname || failed) {
     return (
       <span
-        className="inline-flex shrink-0 items-center justify-center rounded-full bg-surface-2 font-semibold text-muted"
+        className="inline-flex shrink-0 items-center justify-center rounded-full bg-surface font-semibold text-muted"
         style={{ width: size, height: size, fontSize: size * 0.34 }}
         aria-hidden
       >

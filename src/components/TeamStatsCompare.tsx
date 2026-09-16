@@ -32,40 +32,49 @@ export function TeamStatsCompare({ box }: { box: Boxscore }) {
   }
 
   return (
-    <div className="rounded-2xl border border-line bg-surface">
-      <div className="flex items-center justify-between border-b border-line px-4 py-2.5 text-sm font-semibold">
-        <span className="flex items-center gap-2">
-          <TeamLogo seoname={away?.seoname} label={away?.nameShort ?? ""} size={20} />
+    <div className="panel rounded-2xl">
+      <div className="flex items-center justify-between border-b border-line px-4 py-3.5">
+        <span className="flex items-center gap-2.5 text-[16px] font-bold">
+          <TeamLogo seoname={away?.seoname} label={away?.nameShort ?? ""} size={28} />
           {away?.nameShort}
         </span>
-        <span className="flex items-center gap-2">
+        <span className="flex items-center gap-2.5 text-[16px] font-bold">
           {home?.nameShort}
-          <TeamLogo seoname={home?.seoname} label={home?.nameShort ?? ""} size={20} />
+          <TeamLogo seoname={home?.seoname} label={home?.nameShort ?? ""} size={28} />
         </span>
       </div>
+
       <ul>
         {ROWS.map((row) => {
           const av = Number(a[row.key] ?? NaN);
           const hv = Number(h[row.key] ?? NaN);
           const total = (Number.isFinite(av) ? av : 0) + (Number.isFinite(hv) ? hv : 0);
+          // Share of the row's total, so the split bar reads as "who had more".
+          // On an errors row more is worse — the numbers carry that, not the bar.
           const pct = total > 0 ? (av / total) * 100 : 50;
-          // Errors are bad: the bar still shows share, the label carries meaning.
           return (
-            <li key={row.key} className="border-b border-line/60 px-4 py-2.5 last:border-0">
-              <div className="flex items-baseline justify-between text-[13px] tabular-nums">
-                <span className="font-semibold">{a[row.key] ?? "–"}</span>
-                <span className="text-[11px] uppercase tracking-wide text-muted">
+            <li key={row.key} className="border-b border-line-soft px-4 py-3 last:border-0">
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="w-16 text-[19px] font-bold tabular-nums">
+                  {a[row.key] ?? "–"}
+                </span>
+                <span className="flex-1 text-center text-[12px] font-semibold uppercase tracking-[0.12em] text-muted">
                   {row.label}
                 </span>
-                <span className="font-semibold">{h[row.key] ?? "–"}</span>
+                <span className="w-16 text-right text-[19px] font-bold tabular-nums">
+                  {h[row.key] ?? "–"}
+                </span>
               </div>
-              <div className="mt-1.5 flex h-1.5 overflow-hidden rounded-full bg-surface-2">
+              <div
+                className="mt-2 flex h-2 overflow-hidden rounded-full"
+                role="img"
+                aria-label={`${row.label}: ${away?.nameShort} ${a[row.key] ?? "–"}, ${home?.nameShort} ${h[row.key] ?? "–"}`}
+              >
                 <span
-                  className="bg-muted/60"
+                  className="bg-gradient-to-r from-[#41527a] to-[#7d92bd]"
                   style={{ width: `${pct}%` }}
-                  aria-hidden
                 />
-                <span className="flex-1 bg-accent" aria-hidden />
+                <span className="flex-1 bg-gradient-to-r from-[#ff7a3d] to-[#ff5424]" />
               </div>
             </li>
           );

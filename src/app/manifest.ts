@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "D1 Volleyball — Scores & Stats",
-    short_name: "D1 VB",
+    name: "NCAA Volleyball — Scores & Stats",
+    short_name: "NCAA VB",
     description:
       "NCAA Division I women's volleyball scores, schedules, box scores and rankings.",
     start_url: "/",

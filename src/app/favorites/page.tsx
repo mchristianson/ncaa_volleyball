@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Empty, Header, SectionTitle } from "@/components/Header";
+import { Backdrop } from "@/components/Backdrop";
+import { CalendarGlyph, Empty, Header, SectionTitle, StarGlyph } from "@/components/Header";
 import { StarButton } from "@/components/StarButton";
 import { TeamLogo } from "@/components/TeamLogo";
 import { clearFavorites, parsePlayerKey, useFavorites } from "@/lib/favorites";
@@ -14,6 +15,7 @@ export default function FavoritesPage() {
 
   return (
     <>
+      <Backdrop />
       <Header
         title="Favorites"
         subtitle="Stored on this device only"
@@ -23,7 +25,7 @@ export default function FavoritesPage() {
               onClick={() => {
                 if (confirm("Remove all favorites from this device?")) clearFavorites();
               }}
-              className="rounded-full bg-surface-2 px-3 py-1.5 text-[12px] font-medium text-muted"
+              className="panel rounded-full px-3.5 py-2 text-[13px] font-semibold text-muted"
             >
               Clear
             </button>
@@ -31,7 +33,7 @@ export default function FavoritesPage() {
         }
       />
 
-      <div className="px-4">
+      <div className="relative z-10 px-5">
         {empty ? (
           <Empty>
             Tap the star next to any team, conference or player and they&apos;ll show up
@@ -41,12 +43,12 @@ export default function FavoritesPage() {
 
         {favorites.team.length > 0 && (
           <section>
-            <SectionTitle>Teams</SectionTitle>
-            <ul className="overflow-hidden rounded-2xl border border-line bg-surface">
+            <SectionTitle icon={StarGlyph} count={`${favorites.team.length}`}>Teams</SectionTitle>
+            <ul className="panel overflow-hidden rounded-2xl">
               {favorites.team.map((seo) => (
-                <li key={seo} className="flex items-center gap-3 border-b border-line/60 px-3 py-2.5 last:border-0">
-                  <TeamLogo seoname={seo} label={seo} size={26} />
-                  <Link href={`/team/${seo}`} className="flex-1 truncate text-[15px] font-medium">
+                <li key={seo} className="flex items-center gap-3 border-b border-line-soft px-4 py-3 last:border-0">
+                  <TeamLogo seoname={seo} label={seo} size={30} />
+                  <Link href={`/team/${seo}`} className="flex-1 truncate text-[16px] font-semibold">
                     {titleCase(seo)}
                   </Link>
                   <StarButton kind="team" id={seo} label={titleCase(seo)} size={16} />
@@ -58,11 +60,11 @@ export default function FavoritesPage() {
 
         {favorites.conference.length > 0 && (
           <section>
-            <SectionTitle>Conferences</SectionTitle>
-            <ul className="overflow-hidden rounded-2xl border border-line bg-surface">
+            <SectionTitle icon={CalendarGlyph} count={`${favorites.conference.length}`}>Conferences</SectionTitle>
+            <ul className="panel overflow-hidden rounded-2xl">
               {favorites.conference.map((seo) => (
-                <li key={seo} className="flex items-center gap-3 border-b border-line/60 px-3 py-2.5 last:border-0">
-                  <span className="flex-1 truncate text-[15px] font-medium">
+                <li key={seo} className="flex items-center gap-3 border-b border-line-soft px-4 py-3 last:border-0">
+                  <span className="flex-1 truncate text-[16px] font-semibold">
                     {titleCase(seo)}
                   </span>
                   <StarButton kind="conference" id={seo} label={titleCase(seo)} size={16} />
@@ -74,15 +76,15 @@ export default function FavoritesPage() {
 
         {favorites.player.length > 0 && (
           <section>
-            <SectionTitle>Players</SectionTitle>
-            <ul className="overflow-hidden rounded-2xl border border-line bg-surface">
+            <SectionTitle icon={StarGlyph} count={`${favorites.player.length}`}>Players</SectionTitle>
+            <ul className="panel overflow-hidden rounded-2xl">
               {favorites.player.map((key) => {
                 const { teamSeo, first, last } = parsePlayerKey(key);
                 return (
-                  <li key={key} className="flex items-center gap-3 border-b border-line/60 px-3 py-2.5 last:border-0">
+                  <li key={key} className="flex items-center gap-3 border-b border-line-soft px-4 py-3 last:border-0">
                     <TeamLogo seoname={teamSeo} label={teamSeo} size={24} />
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-[15px] font-medium capitalize">
+                      <span className="block truncate text-[16px] font-semibold capitalize">
                         {first} {last}
                       </span>
                       <Link href={`/team/${teamSeo}`} className="text-[11px] text-muted">
@@ -94,7 +96,7 @@ export default function FavoritesPage() {
                 );
               })}
             </ul>
-            <p className="px-1 py-3 text-[11px] text-muted">
+            <p className="px-1 py-4 text-[12px] text-muted">
               Favorited players are highlighted in every box score they appear in.
             </p>
           </section>

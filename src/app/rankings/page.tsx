@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { Backdrop } from "@/components/Backdrop";
 import { Empty, Header, Spinner } from "@/components/Header";
 import { StarButton } from "@/components/StarButton";
 import { TeamLogo } from "@/components/TeamLogo";
@@ -33,6 +34,7 @@ export default function RankingsPage() {
 
   return (
     <>
+      <Backdrop />
       <Header
         title="Rankings"
         subtitle={
@@ -44,13 +46,13 @@ export default function RankingsPage() {
             : "Division I women's volleyball"
         }
       />
-      <div className="no-scrollbar flex gap-1 overflow-x-auto px-4 py-2">
+      <div className="no-scrollbar relative z-10 flex gap-2 overflow-x-auto px-5 py-2">
         {POLLS.map((p) => (
           <button
             key={p.id}
             onClick={() => setPoll(p.id)}
-            className={`shrink-0 rounded-full px-3 py-1.5 text-[13px] font-medium transition ${
-              poll === p.id ? "bg-accent text-white" : "bg-surface-2 text-muted"
+            className={`shrink-0 rounded-full px-4 py-2.5 text-[14px] font-semibold transition ${
+              poll === p.id ? "accent-fill text-white" : "panel text-muted"
             }`}
           >
             {p.name}
@@ -58,26 +60,26 @@ export default function RankingsPage() {
         ))}
       </div>
 
-      <div className="px-4">
+      <div className="relative z-10 px-5">
         {isLoading ? <Spinner /> : null}
         {isError ? <Empty>Couldn&apos;t load this poll.</Empty> : null}
         {data && data.rows.length === 0 ? <Empty>This poll hasn&apos;t been published yet.</Empty> : null}
 
         {data && data.rows.length > 0 && (
-          <ol className="overflow-hidden rounded-2xl border border-line bg-surface">
+          <ol className="panel overflow-hidden rounded-2xl">
             {data.rows.map((row) => {
               const fav = favorites.team.includes(row.seoname);
               return (
                 <li
                   key={`${row.rank}-${row.school}`}
-                  className={`flex items-center gap-3 border-b border-line/60 px-3 py-2.5 last:border-0 ${fav ? "bg-accent-soft" : ""}`}
+                  className={`flex items-center gap-3 border-b border-line-soft px-4 py-3 last:border-0 ${fav ? "bg-accent-soft" : ""}`}
                 >
-                  <span className="w-6 text-center font-mono text-[15px] font-bold tabular-nums">
+                  <span className="w-6 text-center text-[17px] font-bold tabular-nums">
                     {row.rank}
                   </span>
-                  <TeamLogo seoname={row.seoname} label={row.school} size={26} />
+                  <TeamLogo seoname={row.seoname} label={row.school} size={30} />
                   <Link href={`/team/${row.seoname}`} className="min-w-0 flex-1">
-                    <span className="block truncate text-[15px] font-medium">
+                    <span className="block truncate text-[16px] font-semibold">
                       {row.school}
                       {row.firstPlaceVotes ? (
                         <span className="ml-1 text-[11px] text-muted">
@@ -85,7 +87,7 @@ export default function RankingsPage() {
                         </span>
                       ) : null}
                     </span>
-                    <span className="text-[11px] text-muted">
+                    <span className="text-[12px] text-muted">
                       {row.record ?? ""}
                       {row.points ? ` · ${row.points} pts` : ""}
                     </span>
@@ -97,10 +99,10 @@ export default function RankingsPage() {
             })}
           </ol>
         )}
-        <p className="px-1 py-3 text-[11px] text-muted">
+        <p className="px-1 py-4 text-[12px] text-muted">
           Polls are published by the AVCA and the NCAA and refresh weekly.
         </p>
-        <div className="h-4" />
+        <div className="h-8" />
       </div>
     </>
   );

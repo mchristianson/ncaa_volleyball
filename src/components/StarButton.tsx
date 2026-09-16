@@ -26,9 +26,10 @@ export function StarButton({
         e.stopPropagation();
         toggleFavorite(kind, id);
       }}
-      className={`grid shrink-0 place-items-center rounded-full p-1.5 transition active:scale-90 ${
-        active ? "text-accent" : "text-muted/50 hover:text-muted"
+      className={`grid shrink-0 place-items-center rounded-full p-1 transition active:scale-90 ${
+        active ? "text-accent" : "text-faint hover:text-muted"
       } ${className}`}
+      style={active ? { filter: "drop-shadow(0 0 7px rgb(255 95 46 / 0.5))" } : undefined}
     >
       <svg
         width={size}
@@ -36,11 +37,11 @@ export function StarButton({
         viewBox="0 0 24 24"
         fill={active ? "currentColor" : "none"}
         stroke="currentColor"
-        strokeWidth={active ? 0 : 1.8}
+        strokeWidth={active ? 0 : 1.7}
         strokeLinejoin="round"
         aria-hidden
       >
-        <path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.58 1.11 6.47L12 17.45 6.19 20.5l1.11-6.47-4.7-4.58 6.5-.95z" />
+        <path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1.05 6.1L12 17l-5.45 2.9L7.6 13.8 3.2 9.5l6.1-.9z" />
       </svg>
     </button>
   );
