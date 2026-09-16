@@ -7,8 +7,7 @@ browser's localStorage.
 ## What it does
 
 - **Scores** — every D1 match for a day, with your favorites pinned to the top,
-  then ranked teams, then everything else. Swipeable date strip plus a native
-  date picker.
+  then ranked teams, then everything else. Swipeable date strip covering ±10 days.
 - **Search** — the magnifier in the header expands to a field that filters the
   day's matches as you type, against team names, abbreviations, slugs and
   conference ("penn state" finds "Penn St.", "big ten" finds every Big Ten
