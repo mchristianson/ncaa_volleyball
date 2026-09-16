@@ -1,36 +1,96 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# D1 Volleyball
 
-## Getting Started
+Mobile-first scores, schedules, box scores and rankings for **NCAA Division I
+women's volleyball**. No account, no backend database — favorites live in the
+browser's localStorage.
 
-First, run the development server:
+## What it does
+
+- **Scores** — every D1 match for a day, with your favorites pinned to the top,
+  then ranked teams, then everything else. Swipeable date strip plus a native
+  date picker.
+- **Favorites** — star teams, conferences and players. A favorited conference
+  pulls in every match its teams play.
+- **Game detail** — set-by-set line score, match leaders, full player box score
+  (kills, errors, attempts, hitting %, assists, digs, aces, blocks, points),
+  team-vs-team comparison, rally-by-rally play-by-play.
+- **Momentum** — play-by-play rendered as a score-differential area chart per
+  set, with the biggest run and largest lead called out.
+- **Rankings** — AVCA Coaches poll, RPI and the committee's top 16, with
+  week-over-week movement and your favorites highlighted.
+- **Team pages** — record, upcoming matches and recent results.
+- **PWA** — installable, with an offline app shell. Live matches poll every 20s.
+
+## Where the data comes from
+
+Everything is read from NCAA's own public endpoints, server-side, so the browser
+never hits ncaa.com directly (no CORS, and responses are cached at the edge):
+
+| Data | Source |
+| --- | --- |
+| Scoreboard | `sdataprod.ncaa.com` persisted query `GetContests_web` |
+| Game summary | `GetGamecenterGameById_web` |
+| Box score | `NCAA_GetGamecenterBoxscoreVolleyballById_web` |
+| Team stats | `NCAA_GetGamecenterTeamStatsVolleyballById_web` |
+| Play-by-play | `NCAA_GetGamecenterPbpGenericById_web` |
+| Rankings | `ncaa.com/rankings/volleyball-women/d1/...` (HTML, parsed) |
+| Logos | `ncaa.com/sites/default/files/images/logos/schools/bgl\|bgd/{seoname}.svg` |
+
+Those GraphQL queries are *persisted*: each is identified by a sha256 hash that
+NCAA publishes in the `drupalSettings` blob on its own pages and rotates on
+redeploy. `src/lib/ncaa.ts` scrapes the current hashes, caches them for a day,
+retries once on failure, and falls back to a pinned set. If NCAA rotates a hash
+and changes a query shape at the same time, `npm run check` is what tells you.
+
+This is an unofficial app and is not affiliated with or endorsed by the NCAA.
+
+## Running it
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then, with the dev server up:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run check
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+`npm run check` is an end-to-end smoke test against the live NCAA feeds — it
+verifies the persisted queries still resolve, the box score still carries the
+stat fields the UI reads, the rankings HTML still parses into a clean 1..n
+sequence, and that poll school names still map to real logo slugs. Run it after
+any upstream weirdness.
 
-## Learn More
+## Deploying
 
-To learn more about Next.js, take a look at the following resources:
+The app is a stock Next.js App Router project with no environment variables and
+no database, so Vercel needs no configuration:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npx vercel
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Route handlers set their own `cache-control`, so the edge does the heavy
+lifting: finished days are cached for a day, live scoreboards for 30 seconds.
 
-## Deploy on Vercel
+## Layout
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+src/lib/ncaa.ts       NCAA client: persisted queries, hash rotation, rankings parser
+src/lib/favorites.ts  localStorage store (useSyncExternalStore, cross-tab synced)
+src/lib/api.ts        TanStack Query hooks, live-aware polling
+src/app/api/*         server routes that proxy and cache the NCAA feeds
+src/app/*             Scores / Game / Team / Rankings / Favorites
+src/components/*      GameCard, BoxScore, MomentumChart, TeamStatsCompare, ...
+scripts/check.mjs     end-to-end smoke test
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Known limits
+
+- Team pages cover a ±3 week window, because NCAA has no per-team schedule feed
+  — the page is assembled from daily scoreboards. A full season view would want
+  a nightly job that walks every date once.
+- Player favorites key on `team|last|first`, since the public box score has no
+  stable player id. A transfer will read as a new player.
