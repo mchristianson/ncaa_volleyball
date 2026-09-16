@@ -9,7 +9,7 @@
  * not "our types drifted".
  */
 import assert from "node:assert/strict";
-import { safeColor, titleCase } from "../src/lib/format.ts";
+import { matchesTeamQuery, safeColor, titleCase } from "../src/lib/format.ts";
 import { schoolSeo } from "../src/lib/ncaa.ts";
 
 const BASE = process.env.BASE_URL ?? "http://localhost:3000";
@@ -61,6 +61,27 @@ await check("titleCase renders conference and team slugs", () => {
 
 // A finished 2024 match with a full box score, team stats and play-by-play.
 const FIXTURE_GAME = "6330542";
+
+await check("team search matches on every name the feed gives", () => {
+  const game = {
+    teams: [
+      { nameShort: "Penn St.", name6Char: "PENNST", seoname: "penn-st", conferenceSeo: "big-ten" },
+      { nameShort: "Hawaii", name6Char: "HAWAII", seoname: "hawaii", conferenceSeo: "big-west" },
+    ],
+  };
+  assert.equal(matchesTeamQuery(game, ""), true, "empty query should not filter");
+  assert.equal(matchesTeamQuery(game, "  "), true);
+  assert.equal(matchesTeamQuery(game, "penn"), true);
+  assert.equal(matchesTeamQuery(game, "PENN"), true);
+  // "State" typed out still finds a feed that abbreviates to "St."
+  assert.equal(matchesTeamQuery(game, "penn state"), true);
+  assert.equal(matchesTeamQuery(game, "haw"), true);
+  assert.equal(matchesTeamQuery(game, "Hawai'i"), true);
+  assert.equal(matchesTeamQuery(game, "big ten"), true);
+  assert.equal(matchesTeamQuery(game, "nebraska"), false);
+  // Terms are ANDed, and must all land on the SAME team.
+  assert.equal(matchesTeamQuery(game, "penn big west"), false);
+});
 
 await check("schoolSeo maps poll display names to NCAA slugs", () => {
   assert.equal(schoolSeo("Nebraska"), "nebraska");

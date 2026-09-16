@@ -9,6 +9,10 @@ browser's localStorage.
 - **Scores** — every D1 match for a day, with your favorites pinned to the top,
   then ranked teams, then everything else. Swipeable date strip plus a native
   date picker.
+- **Search** — the magnifier in the header expands to a field that filters the
+  day's matches as you type, against team names, abbreviations, slugs and
+  conference ("penn state" finds "Penn St.", "big ten" finds every Big Ten
+  match). Purely client-side over the already-loaded day.
 - **Favorites** — star teams, conferences and players. A favorited conference
   pulls in every match its teams play.
 - **Game detail** — set-by-set line score, match leaders, full player box score

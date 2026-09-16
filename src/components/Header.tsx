@@ -5,11 +5,14 @@ export function Header({
   subtitle,
   right,
   back,
+  collapseTitle,
 }: {
   title: string;
   subtitle?: string | null;
   right?: React.ReactNode;
   back?: React.ReactNode;
+  /** Hides the title so `right` can take the full bar (e.g. an open search). */
+  collapseTitle?: boolean;
 }) {
   return (
     <header
@@ -18,12 +21,14 @@ export function Header({
     >
       <div className="flex items-center gap-2">
         {back}
-        <div className="min-w-0 flex-1">
-          <h1 className="truncate text-xl font-bold tracking-tight">{title}</h1>
-          {subtitle ? (
-            <p className="truncate text-xs text-muted">{subtitle}</p>
-          ) : null}
-        </div>
+        {collapseTitle ? null : (
+          <div className="min-w-0 flex-1">
+            <h1 className="truncate text-xl font-bold tracking-tight">{title}</h1>
+            {subtitle ? (
+              <p className="truncate text-xs text-muted">{subtitle}</p>
+            ) : null}
+          </div>
+        )}
         {right}
       </div>
     </header>

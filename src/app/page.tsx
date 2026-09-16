@@ -4,9 +4,10 @@ import { useMemo, useState } from "react";
 import { DateStrip } from "@/components/DateStrip";
 import { GameCard } from "@/components/GameCard";
 import { Empty, Header, SectionTitle, Spinner } from "@/components/Header";
+import { TeamSearch } from "@/components/TeamSearch";
 import { useRankings, useScoreboard } from "@/lib/api";
 import { useFavorites } from "@/lib/favorites";
-import { dayLabel } from "@/lib/format";
+import { dayLabel, matchesTeamQuery } from "@/lib/format";
 import { todayISO, type ScoreboardGame } from "@/lib/ncaa";
 
 /** Best (lowest) poll rank among a game's teams, or null. */
@@ -20,6 +21,8 @@ function gameRank(g: ScoreboardGame, pollRank: Map<string, number>) {
 export default function ScoresPage() {
   const today = useMemo(() => todayISO(), []);
   const [date, setDate] = useState(today);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [query, setQuery] = useState("");
   const { data, isLoading, isError } = useScoreboard(date);
   const favorites = useFavorites();
 
@@ -31,10 +34,10 @@ export default function ScoresPage() {
     return m;
   }, [poll]);
 
-  const { mine, ranked, rest } = useMemo(() => {
-    const games = [...(data?.games ?? [])].sort(
-      (a, b) => a.startTimeEpoch - b.startTimeEpoch,
-    );
+  const { mine, ranked, rest, matched } = useMemo(() => {
+    const games = [...(data?.games ?? [])]
+      .filter((g) => matchesTeamQuery(g, query))
+      .sort((a, b) => a.startTimeEpoch - b.startTimeEpoch);
     const isMine = (g: ScoreboardGame) =>
       g.teams.some(
         (t) =>
@@ -48,8 +51,13 @@ export default function ScoresPage() {
       .filter((g) => gameRank(g, pollRank) !== null)
       .sort((a, b) => gameRank(a, pollRank)! - gameRank(b, pollRank)!);
     const rankedIds = new Set(ranked.map((g) => g.contestId));
-    return { mine, ranked, rest: others.filter((g) => !rankedIds.has(g.contestId)) };
-  }, [data, favorites, pollRank]);
+    return {
+      mine,
+      ranked,
+      rest: others.filter((g) => !rankedIds.has(g.contestId)),
+      matched: games.length,
+    };
+  }, [data, favorites, pollRank, query]);
 
   const total = (data?.games ?? []).length;
 
@@ -58,6 +66,20 @@ export default function ScoresPage() {
       <Header
         title="D1 Volleyball"
         subtitle={`${dayLabel(date, today)} · ${total} ${total === 1 ? "match" : "matches"}`}
+        collapseTitle={searchOpen}
+        right={
+          <TeamSearch
+            open={searchOpen}
+            query={query}
+            count={matched}
+            onOpen={() => setSearchOpen(true)}
+            onClose={() => {
+              setSearchOpen(false);
+              setQuery("");
+            }}
+            onChange={setQuery}
+          />
+        }
       />
       <div className="sticky top-[68px] z-10 bg-bg/85 px-4 py-2 backdrop-blur">
         <DateStrip value={date} today={today} onChange={setDate} />
@@ -68,6 +90,12 @@ export default function ScoresPage() {
         {isError ? <Empty>Couldn&apos;t reach the NCAA feed. Pull to retry.</Empty> : null}
         {!isLoading && !isError && total === 0 ? (
           <Empty>No Division I matches scheduled.</Empty>
+        ) : null}
+        {!isLoading && !isError && total > 0 && matched === 0 ? (
+          <Empty>
+            No team matching &ldquo;{query}&rdquo; plays{" "}
+            {date === today ? "today" : `on ${dayLabel(date, today)}`}.
+          </Empty>
         ) : null}
 
         {mine.length > 0 && (

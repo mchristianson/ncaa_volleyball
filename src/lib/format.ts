@@ -88,3 +88,34 @@ export function safeColor(hex: string | null | undefined, fallback = "#667085") 
     .map((v) => v.toString(16).padStart(2, "0"))
     .join("")}`;
 }
+
+/**
+ * Normalizes a name for loose matching: case, accents and punctuation go away,
+ * and "State" collapses to "St" so typing "penn state" finds "Penn St.".
+ */
+export function normalizeName(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\bstate\b/g, "st")
+    .trim();
+}
+
+/**
+ * True when any team in the match matches the query. Matching is on every name
+ * the feed gives us — display name, six-char abbreviation, slug — plus the
+ * conference slug, so "big ten", "neb" and "huskers"-adjacent slugs all land.
+ */
+export function matchesTeamQuery(game: ScoreboardGame, query: string): boolean {
+  const q = normalizeName(query);
+  if (!q) return true;
+  const terms = q.split(" ");
+  return game.teams.some((t) => {
+    const hay = normalizeName(
+      [t.nameShort, t.name6Char, t.seoname, t.conferenceSeo].filter(Boolean).join(" "),
+    );
+    return terms.every((term) => hay.includes(term));
+  });
+}
