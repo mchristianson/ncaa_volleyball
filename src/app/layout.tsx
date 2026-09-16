@@ -9,11 +9,11 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "NCAA Volleyball",
+  title: "Volley Scores",
   description:
     "NCAA Division I women's volleyball scores, schedules, box scores and rankings.",
   manifest: "/manifest.webmanifest",
-  appleWebApp: { capable: true, title: "NCAA VB", statusBarStyle: "default" },
+  appleWebApp: { capable: true, title: "Volley Scores", statusBarStyle: "default" },
 };
 
 export const viewport: Viewport = {

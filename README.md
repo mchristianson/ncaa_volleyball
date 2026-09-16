@@ -1,4 +1,4 @@
-# NCAA Volleyball
+# Volley Scores
 
 Mobile-first scores, schedules, box scores and rankings for **NCAA Division I
 women's volleyball**. No account, no backend database — favorites live in the

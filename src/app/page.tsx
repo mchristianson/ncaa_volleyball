@@ -85,7 +85,7 @@ export default function ScoresPage() {
     <>
       <Backdrop />
       <Header
-        title="NCAA Volleyball"
+        title="Volley Scores"
         subtitle={`${dayLabel(date, today)} · ${label(total)}`}
         collapseTitle={searchOpen}
         right={
