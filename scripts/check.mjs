@@ -10,7 +10,7 @@
  */
 import assert from "node:assert/strict";
 import { matchesTeamQuery, safeColor, titleCase } from "../src/lib/format.ts";
-import { schoolSeo } from "../src/lib/ncaa.ts";
+import { broadcastFrom, schoolSeo } from "../src/lib/ncaa.ts";
 
 const BASE = process.env.BASE_URL ?? "http://localhost:3000";
 
@@ -142,6 +142,75 @@ await check("game detail carries linescores and team colors", async () => {
   }
   const ts = teamStats.teamBoxscore[0].teamStats;
   assert.ok(Number(ts.kills) > 0, "team kills missing");
+});
+
+await check("broadcastFrom normalizes what the UI shows under Broadcast", () => {
+  assert.deepEqual(broadcastFrom({ network: "ESPN+" }), { network: "ESPN+" });
+  assert.deepEqual(broadcastFrom({ network: "  FS1 " }), { network: "FS1" });
+  assert.deepEqual(broadcastFrom({ network: "BTN" }), { network: "BTN" });
+  // No broadcaster -> no section at all, never a placeholder row.
+  assert.equal(broadcastFrom({ network: null }), null);
+  assert.equal(broadcastFrom({ network: "" }), null);
+  assert.equal(broadcastFrom({ network: "   " }), null);
+  for (const junk of ["TBA", "tbd", "N/A", "na", "None", "null", "-", "--"]) {
+    assert.equal(broadcastFrom({ network: junk }), null, `"${junk}" should not render`);
+  }
+});
+
+await check("completed match exposes a normalized broadcast field", async () => {
+  const { info } = await get(`/api/game/${FIXTURE_GAME}`);
+  assert.ok("broadcast" in info, "info.broadcast missing");
+  if (info.broadcast === null) {
+    // Legitimate: this match simply had no broadcaster. The UI hides the section.
+    assert.ok(!broadcastFrom({ network: info.network ?? null }), "null despite a network");
+  } else {
+    assert.equal(typeof info.broadcast.network, "string");
+    assert.ok(info.broadcast.network.length > 0, "empty network string");
+  }
+});
+
+/*
+ * The persisted GraphQL query is fixed upstream, so the gamecenter payload can
+ * carry fields this repo never named. That makes "does NCAA give us a watch
+ * URL?" a question only a live response can answer — so answer it here rather
+ * than guessing a field name in src/lib/ncaa.ts. This check reports; it only
+ * fails if a URL turns up that the UI is throwing away.
+ */
+await check("gamecenter payload broadcast fields", async () => {
+  const BROADCASTY = /network|broadcast|\btv\b|watch|stream|video|media|digital/i;
+  const URLISH = /^https?:\/\//i;
+
+  const busy = await get("/api/scoreboard?date=2024-11-16");
+  const onTv = busy.games.filter((g) => g.broadcasterName);
+  const offTv = busy.games.filter((g) => !g.broadcasterName);
+  console.log(
+    `       scoreboard 2024-11-16: ${onTv.length}/${busy.games.length} games carry broadcasterName`,
+  );
+  if (onTv[0]) console.log(`       sample broadcasterName: ${onTv[0].broadcasterName}`);
+
+  const ids = [FIXTURE_GAME];
+  if (onTv[0]) ids.push(String(onTv[0].contestId));
+  if (offTv[0]) ids.push(String(offTv[0].contestId));
+
+  const stray = [];
+  for (const id of ids) {
+    const { info } = await get(`/api/game/${id}`);
+    const hits = Object.entries(info)
+      .filter(([k, v]) => BROADCASTY.test(k) || (typeof v === "string" && URLISH.test(v)))
+      .map(([k, v]) => `${k}=${JSON.stringify(v)}`);
+    console.log(`       game ${id}: ${hits.length ? hits.join(" ") : "(no broadcast fields)"}`);
+    for (const [k, v] of Object.entries(info)) {
+      if (k === "broadcast") continue;
+      if (typeof v === "string" && URLISH.test(v) && BROADCASTY.test(k)) stray.push(`${id}.${k}`);
+    }
+  }
+  // If NCAA starts sending a real watch link, wire it into Broadcast rather
+  // than dropping it: add watchUrl to the Broadcast type and broadcastFrom.
+  assert.equal(
+    stray.length,
+    0,
+    `NCAA now sends a watch URL the UI ignores: ${stray.join(", ")}`,
+  );
 });
 
 await check("play-by-play yields a usable momentum series", async () => {
