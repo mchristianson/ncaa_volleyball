@@ -13,6 +13,7 @@ import {
   Header,
   Spinner,
   TrophyGlyph,
+  TvGlyph,
 } from "@/components/Header";
 import { MomentumChart } from "@/components/MomentumChart";
 import { PlayList } from "@/components/PlayList";
@@ -198,7 +199,11 @@ function Summary({ info, box }: { info: GameInfo; box: Boxscore | null }) {
           label="Status"
           value={info.finalMessage || info.currentPeriod || info.statusCodeDisplay}
         />
-        {info.network ? <Fact icon={DocGlyph} label="TV" value={info.network} /> : null}
+        {/* Secondary to the score, sets and stats above; absent entirely when
+            NCAA has no broadcaster for the match. */}
+        {info.broadcast ? (
+          <Fact icon={TvGlyph} label="Broadcast" value={info.broadcast.network} />
+        ) : null}
         <Fact icon={DocGlyph} label="Season" value={String(info.seasonYear)} />
       </dl>
 

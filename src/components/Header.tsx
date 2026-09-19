@@ -175,3 +175,10 @@ export const DocGlyph = (
     <path d="M8 8h8M8 12h8M8 16h5" />
   </svg>
 );
+
+export const TvGlyph = (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <rect x="2.5" y="6" width="19" height="12.5" rx="3" />
+    <path d="M8 3.5L12 6l4-2.5" />
+  </svg>
+);

@@ -172,6 +172,17 @@ export type ContestTeam = {
   isWinner: boolean;
 };
 
+/**
+ * What the match-details screen shows under "Broadcast", already normalized.
+ *
+ * `watchUrl` is deliberately absent: NCAA's gamecenter payload carries the
+ * broadcaster's *name* and no link, and a URL guessed from the name would be a
+ * fabrication. If upstream ever starts sending one, add it here and in
+ * `broadcastFrom` — `npm run check` prints any URL-valued field the payload
+ * gained (see "gamecenter payload broadcast fields").
+ */
+export type Broadcast = { network: string };
+
 export type GameInfo = {
   id: string;
   sportUrl: string;
@@ -182,7 +193,10 @@ export type GameInfo = {
   startTime: string;
   startTimeEpoch: number;
   seasonYear: number;
+  /** NCAA's raw broadcaster name. Prefer `broadcast` in UI code. */
   network: string | null;
+  /** Derived in `getGame` so the UI never reads NCAA's raw shape. */
+  broadcast: Broadcast | null;
   hasBoxscore: boolean;
   hasPbp: boolean;
   hasTeamStats: boolean;
@@ -359,15 +373,29 @@ export function seasonYearFor(date: string): number {
   return m >= 8 ? y : y - 1;
 }
 
+/**
+ * NCAA reports a match's broadcaster as a bare name ("ESPN+", "FS1", "BTN"),
+ * and fills the field with a placeholder rather than null when nothing is set.
+ * Anything that isn't a real broadcaster name becomes `null` so the UI can hide
+ * the section outright instead of printing "TBA".
+ */
+const NOT_A_NETWORK = /^(tba|tbd|n\/?a|none|null|-+)$/i;
+
+export function broadcastFrom(game: { network: string | null }): Broadcast | null {
+  const network = game.network?.trim() ?? "";
+  if (!network || NOT_A_NETWORK.test(network)) return null;
+  return { network };
+}
+
 export async function getGame(contestId: string): Promise<GameInfo> {
-  const data = await gql<{ contests: GameInfo[] }>(
+  const data = await gql<{ contests: Omit<GameInfo, "broadcast">[] }>(
     "GetGamecenterGameById_web",
     { id: contestId },
     30,
   );
   const game = data.contests?.[0];
   if (!game) throw new Error(`Game ${contestId} not found`);
-  return game;
+  return { ...game, broadcast: broadcastFrom(game) };
 }
 
 export async function getBoxscore(contestId: string): Promise<Boxscore> {
