@@ -175,8 +175,8 @@ export type ContestTeam = {
 /**
  * What the match-details screen shows under "Broadcast", already normalized.
  *
- * `watchUrl` is deliberately absent: NCAA's gamecenter payload carries the
- * broadcaster's *name* and no link, and a URL guessed from the name would be a
+ * `watchUrl` is deliberately absent: both NCAA feeds carry the broadcaster's
+ * *name* and no link, and a URL guessed from the name would be a
  * fabrication. If upstream ever starts sending one, add it here and in
  * `broadcastFrom` — `npm run check` prints any URL-valued field the payload
  * gained (see "gamecenter payload broadcast fields").
@@ -387,6 +387,42 @@ export function broadcastFrom(game: { network: string | null }): Broadcast | nul
   return { network };
 }
 
+/**
+ * The two feeds disagree about where a broadcaster lives. The gamecenter
+ * payload has `network`, but it is routinely empty even for televised matches;
+ * the scoreboard feed carries the same match's broadcaster as
+ * `broadcasterName` (it is what the listing cards render). So prefer the
+ * gamecenter value and fall back to the scoreboard row for the same contest.
+ *
+ * The extra request is normally a cache hit: `getScoreboard` is already warm
+ * for that date from the scoreboard page, and past dates cache for a day.
+ * Broadcast info is decoration, so a failure here hides the section rather
+ * than failing the match.
+ */
+async function broadcastFor(
+  game: Pick<GameInfo, "id" | "network" | "startTimeEpoch">,
+): Promise<Broadcast | null> {
+  const direct = broadcastFrom(game);
+  if (direct || !game.startTimeEpoch) return direct;
+  try {
+    const sameDay = await getScoreboard(isoFromEpoch(game.startTimeEpoch));
+    const row = sameDay.find((g) => String(g.contestId) === String(game.id));
+    return broadcastFrom({ network: row?.broadcasterName ?? null });
+  } catch {
+    return null;
+  }
+}
+
+/** Epoch seconds -> the ISO date the match belongs to, NCAA's clock not ours. */
+export function isoFromEpoch(epoch: number, tz = "America/New_York"): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: tz,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date(epoch * 1000));
+}
+
 export async function getGame(contestId: string): Promise<GameInfo> {
   const data = await gql<{ contests: Omit<GameInfo, "broadcast">[] }>(
     "GetGamecenterGameById_web",
@@ -395,7 +431,7 @@ export async function getGame(contestId: string): Promise<GameInfo> {
   );
   const game = data.contests?.[0];
   if (!game) throw new Error(`Game ${contestId} not found`);
-  return { ...game, broadcast: broadcastFrom(game) };
+  return { ...game, broadcast: await broadcastFor(game) };
 }
 
 export async function getBoxscore(contestId: string): Promise<Boxscore> {

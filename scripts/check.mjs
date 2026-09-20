@@ -188,6 +188,23 @@ await check("gamecenter payload broadcast fields", async () => {
   );
   if (onTv[0]) console.log(`       sample broadcasterName: ${onTv[0].broadcasterName}`);
 
+  // The decisive comparison: for a contest the scoreboard says is televised,
+  // does the gamecenter payload agree? `network` being empty here is exactly
+  // why getGame falls back to the scoreboard's broadcasterName.
+  if (onTv[0]) {
+    const id = String(onTv[0].contestId);
+    const { info } = await get(`/api/game/${id}`);
+    console.log(
+      `       contest ${id}: scoreboard.broadcasterName=${JSON.stringify(onTv[0].broadcasterName)}` +
+        ` gamecenter.network=${JSON.stringify(info.network ?? null)}` +
+        ` -> broadcast=${JSON.stringify(info.broadcast)}`,
+    );
+    assert.ok(
+      info.broadcast && info.broadcast.network,
+      `scoreboard says ${onTv[0].broadcasterName} but the details screen shows nothing`,
+    );
+  }
+
   const ids = [FIXTURE_GAME];
   if (onTv[0]) ids.push(String(onTv[0].contestId));
   if (offTv[0]) ids.push(String(offTv[0].contestId));
